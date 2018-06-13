@@ -18,8 +18,6 @@ public class LoginController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException {
 		try {
-			int n = 0;
-			int m = 0;
 			if (loginService.areCredentialsValid(request.getParameter("username"), 
 					request.getParameter("password"))) {
 				response.sendRedirect("main.jsp");

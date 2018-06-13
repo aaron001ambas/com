@@ -7,9 +7,8 @@ import com.ambas.dao.LoginDAO;
 
 public class LoginService {
 
-	LoginDAO loginDao = new LoginDAO();
 	private String badMsg = "[ERROR] Bad login.";
-	
+	LoginDAO loginDao = new LoginDAO();
 	
 	public boolean areCredentialsValid(String username, 
 			String password) throws ClassNotFoundException, SQLException {

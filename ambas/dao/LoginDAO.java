@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginDAO {
-	
 	private String dbUser = "root";
 	private String dbPassword = "root";
 	private String dbUrl = "jdbc:mysql://localhost/mydb";
@@ -23,7 +22,7 @@ public class LoginDAO {
 	
 	public boolean isUserFound(String username, String password) throws ClassNotFoundException, SQLException {
 		connect = connectDB();
-		String query = "SELECT * FROM accounts WHERE username=? and  password=?;";
+		String query = "SELECT * FROM users WHERE username=? and  password=?;";
 		preparedStmt = connect.prepareStatement(query);
 		preparedStmt.setString(1, username);
 		preparedStmt.setString(2, password);
@@ -35,7 +34,4 @@ public class LoginDAO {
 			return false;
 		}
 	}
-	
-	
-	
 }
