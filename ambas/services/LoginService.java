@@ -15,7 +15,7 @@ public class LoginService {
 		if (isEmpty(username, password)) {
 			System.out.println(badMsg);
 			return false;
-		} else if (loginDao.isCredentialsMatched(username, password)) {
+		} else if (loginDao.credentialsMatched(username, password)) {
 			System.out.println("[CONSOLE] User "
 								+ username + " is logged in.");
 			return true;

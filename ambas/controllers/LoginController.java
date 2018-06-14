@@ -22,12 +22,10 @@ public class LoginController extends HttpServlet {
 					request.getParameter("password"))) {
 				response.sendRedirect("main.jsp");
 			} else {
-				System.out.println("ELSE, NOT CAUGHT NO ERRORS");
 				request.setAttribute("notification", "Invalid username and/or password");
 				request.getRequestDispatcher("/login.jsp").forward(request, response);
 			}
 		} catch (ClassNotFoundException | SQLException e) {
-			System.out.println("[ERROR] Bad input. TRY CAUGHT");
 			request.setAttribute("notification", "Invalid username and/or password");
 			request.getRequestDispatcher("/login.jsp").forward(request, response);
 		}

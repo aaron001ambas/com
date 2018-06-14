@@ -20,8 +20,10 @@ public class LoginDAO {
 		return connect;
 	}
 	
-	public boolean isCredentialsMatched(String username, String password) throws ClassNotFoundException, SQLException {
-		if (hasResult(username, password)) {
+	public boolean credentialsMatched(String username, String password) throws ClassNotFoundException, SQLException {
+		// Must check first if there are results (Using count(*) NumRows) to
+		// avoid catching any ClassNotFoundException errors
+		if (hasResult(username, password)) { 
 			connect = connectDB();
 			String query = "SELECT * FROM users WHERE username=? and  password=?;";
 			preparedStmt = connect.prepareStatement(query);
