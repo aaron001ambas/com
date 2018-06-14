@@ -20,15 +20,32 @@ public class LoginDAO {
 		return connect;
 	}
 	
-	public boolean isUserFound(String username, String password) throws ClassNotFoundException, SQLException {
+	public boolean isCredentialsMatched(String username, String password) throws ClassNotFoundException, SQLException {
+		if (hasResult(username, password)) {
+			connect = connectDB();
+			String query = "SELECT * FROM users WHERE username=? and  password=?;";
+			preparedStmt = connect.prepareStatement(query);
+			preparedStmt.setString(1, username);
+			preparedStmt.setString(2, password);
+			resultSet = preparedStmt.executeQuery();
+			resultSet.next();
+			if (username.equalsIgnoreCase(resultSet.getString("username"))
+					&& password.equals(resultSet.getString("password"))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasResult(String username, String password) throws ClassNotFoundException, SQLException {
 		connect = connectDB();
-		String query = "SELECT * FROM users WHERE username=? and  password=?;";
+		String query = "SELECT count(*) as NumRow FROM users WHERE username=? and  password=?;";
 		preparedStmt = connect.prepareStatement(query);
 		preparedStmt.setString(1, username);
 		preparedStmt.setString(2, password);
 		resultSet = preparedStmt.executeQuery();
-		System.out.println("username is " + username + " and password is " + password);
-		if(resultSet.next() == true) {
+		resultSet.next();
+		if (0 < resultSet.getInt("NumRow")) {
 			return true;
 		} else {
 			return false;
