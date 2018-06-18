@@ -53,4 +53,27 @@ public class LoginDAO {
 			return false;
 		}
 	}
+	
+	public String sendUsername(String username, String password) throws ClassNotFoundException, SQLException {
+		connect = connectDB();
+		String query = "SELECT * FROM users WHERE username=? and  password=?;";
+		preparedStmt = connect.prepareStatement(query);
+		preparedStmt.setString(1, username);
+		preparedStmt.setString(2, password);
+		resultSet = preparedStmt.executeQuery();
+		resultSet.next();
+		return resultSet.getString("username");
+	}
+	
+	public String sendType(String username, String password) throws ClassNotFoundException, SQLException {
+		connect = connectDB();
+		String query = "SELECT * FROM users WHERE username=? and  password=?;";
+		preparedStmt = connect.prepareStatement(query);
+		preparedStmt.setString(1, username);
+		preparedStmt.setString(2, password);
+		resultSet = preparedStmt.executeQuery();
+		resultSet.next();
+		return resultSet.getString("type");
+	}
+	
 }
