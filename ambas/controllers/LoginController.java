@@ -26,6 +26,7 @@ public class LoginController extends HttpServlet {
 				// Login Success
 				HttpSession session = request.getSession();
 				session.setAttribute("username", user.getUsername(request.getParameter("username"), request.getParameter("password")));
+				session.setAttribute("password", user.getPassword(request.getParameter("username"), request.getParameter("password")));
 				session.setAttribute("type", user.getType(request.getParameter("username"), request.getParameter("password")));
 				request.getRequestDispatcher("/main.jsp").forward(request, response);
 				System.out.println("[" + request.getRemoteAddr() + "] User " + user.getUsername(request.getParameter("username"), request.getParameter("password")) + " has logged in.");
