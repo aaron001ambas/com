@@ -2,6 +2,7 @@ package com.ambas.controllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
 
+import com.ambas.dao.ListingAccountsDAO;
 import com.ambas.domain.User;
 import com.ambas.services.AuthorizationService;
 
@@ -32,6 +34,10 @@ public class MainController extends HttpServlet {
 		String requiredType = "admin";
 		String username = (String) session.getAttribute("username");
 		String password = (String) session.getAttribute("password");
+		
+		if (request.getParameter("modify") != null) {
+			
+		}
 		
 		// Logout button pressed
 		if (request.getParameter("logout") != null) {
@@ -58,11 +64,12 @@ public class MainController extends HttpServlet {
 			password = (String) session.getAttribute("password");
 			try {
 				if (authserv.isUserAuthorized(username, password, requiredType)) {
-					System.out.println("user authorized");
+					ListingAccountsDAO listaccounts = new ListingAccountsDAO();
+					List<User> accounts = listaccounts.listAccounts();
+					session.setAttribute("accounts", accounts);
 					request.getRequestDispatcher("/manageaccounts.jsp").forward(request, response);
 					return;
 				} else
-					System.out.println("User not authorized");
 				request.setAttribute("notificationForMain", "You are not authorized to manage accounts.");
 				request.getRequestDispatcher("/main.jsp").forward(request, response);
 			} catch (ClassNotFoundException | SQLException e) {

@@ -11,12 +11,10 @@ public class LoginService {
 	
 	public boolean areCredentialsValid(String username, String password) throws ClassNotFoundException, SQLException {
 		if (isEmpty(username, password)) {
-//			System.out.println(badMsg);
 			return false;
 		} else if (loginDao.credentialsMatched(username, password)) {
 					return true;
 		} else {
-//			System.out.println(badMsg);
 			return false;
 		}
 	}
