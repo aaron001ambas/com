@@ -33,7 +33,7 @@ public class User {
 	
 	public String getType(String username, String password) throws ClassNotFoundException, SQLException {
 		LoginDAO logindao = new LoginDAO();
-		return logindao.sendType(username, password);
+		return logindao.sendType(username);
 	}
 	
 	public String getPassword(String username, String password) throws ClassNotFoundException, SQLException {

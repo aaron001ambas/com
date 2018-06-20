@@ -10,13 +10,12 @@ public class LoginService {
 	LoginDAO loginDao = new LoginDAO();
 	
 	public boolean areCredentialsValid(String username, String password) throws ClassNotFoundException, SQLException {
-		if (isEmpty(username, password)) {
-			return false;
-		} else if (loginDao.credentialsMatched(username, password)) {
-					return true;
-		} else {
-			return false;
+		if (!isEmpty(username, password)) {
+			if (loginDao.credentialsMatched(username, password)) {
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	public boolean isEmpty(String username, String password) {

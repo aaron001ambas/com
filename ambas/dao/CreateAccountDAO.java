@@ -22,18 +22,37 @@ public class CreateAccountDAO{
 		return connect;
 	}
 	
-	public void insertAccount(String username, String type) {
-		try {
-			connect = connectDB();
-			String query = "INSERT INTO users (username, password, type) VALUES (?, 12345, ?);";
-			preparedStmt = connect.prepareStatement(query);
-			preparedStmt.setString(1, username);
-			preparedStmt.setString(2, type);
-			preparedStmt.executeUpdate();
-			System.out.println("insert success");
-		} catch (ClassNotFoundException | SQLException e) {
-			System.out.println("insert failed");
-			System.err.println(e);
+	public boolean attemptInsertAccount(String username, String type) throws ClassNotFoundException, SQLException {
+		if (!doesUsernameAlreadyExist(username)) {
+			try {
+				connect = connectDB();
+				String query = "INSERT INTO users (username, password, type) VALUES (?, 12345, ?);";
+				preparedStmt = connect.prepareStatement(query);
+				preparedStmt.setString(1, username);
+				preparedStmt.setString(2, type);
+				preparedStmt.executeUpdate();
+				System.out.println("insert success");
+			} catch (ClassNotFoundException | SQLException e) {
+				System.out.println("insert failed");
+				System.err.println(e);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean doesUsernameAlreadyExist(String username) throws ClassNotFoundException, SQLException {
+		connect = connectDB();
+		String query = "SELECT count(*) as NumRow from USERS Where username=?";
+		preparedStmt = connect.prepareStatement(query);
+		preparedStmt.setString(1, username);
+		resultSet = preparedStmt.executeQuery();
+		resultSet.next();
+		if (0 < resultSet.getInt("NumRow")) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 	

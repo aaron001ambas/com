@@ -5,10 +5,10 @@ import java.sql.SQLException;
 import com.ambas.dao.LoginDAO;
 
 public class AuthorizationService {
-	LoginDAO logindao = new LoginDAO();
 	
-	public boolean isUserAuthorized(String username, String password, String requiredType) throws ClassNotFoundException, SQLException {
-		if (requiredType.equals(logindao.sendType(username, password))) {
+	public boolean isUserAuthorized(String username, String requiredType) throws ClassNotFoundException, SQLException {
+		LoginDAO logindao = new LoginDAO();
+		if (requiredType.equals(logindao.sendType(username))) {
 			return true;
 		} else {
 			return false;

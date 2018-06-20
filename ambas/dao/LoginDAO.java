@@ -65,12 +65,11 @@ public class LoginDAO {
 		return resultSet.getString("username");
 	}
 	
-	public String sendType(String username, String password) throws ClassNotFoundException, SQLException {
+	public String sendType(String username) throws ClassNotFoundException, SQLException {
 		connect = connectDB();
-		String query = "SELECT * FROM users WHERE username=? and  password=?;";
+		String query = "SELECT * FROM users WHERE username=?;";
 		preparedStmt = connect.prepareStatement(query);
 		preparedStmt.setString(1, username);
-		preparedStmt.setString(2, password);
 		resultSet = preparedStmt.executeQuery();
 		resultSet.next();
 		return resultSet.getString("type");
