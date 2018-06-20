@@ -41,16 +41,7 @@ public class ListingAccountsDAO {
 			user.setType(resultSet.getString(2));
 			users.add(user);
 		}
-		
 		return users;
-//		response.setContentType("text/html");
-//		PrintWriter out = response.getWriter();
-//		String str = "<table><tr><th>Username</th><th>User Type</th></tr>";
-//		while (resultSet.next()) {
-//			str += "<tr><td>" + resultSet.getString(1) + "</td><td>" + resultSet.getString(2) + "</td></tr>";
-//		}
-//		str += "</table>";
-//		out.println(str);
 	}
 	
 }

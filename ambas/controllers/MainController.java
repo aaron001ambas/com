@@ -14,6 +14,7 @@ import javax.websocket.Session;
 import com.ambas.dao.ListingAccountsDAO;
 import com.ambas.domain.User;
 import com.ambas.services.AuthorizationService;
+import com.ambas.services.CreateAccountService;
 
 public class MainController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -79,6 +80,19 @@ public class MainController extends HttpServlet {
 		}
 		// Manage Accounts button ends here
 		
+		// Create account button is pressed
+			if (request.getParameter("createAccount") != null) {
+				request.getRequestDispatcher("/AddAccount.jsp").forward(request,response);
+			}
+		// Create account button ends here
+		
+		// Creating account
+			if (request.getParameter("submitCreateAccount") != null) {
+				CreateAccountService createAccount = new CreateAccountService();
+				createAccount.createAccount(request.getParameter("username"), request.getParameter("type"));
+			}
+		// Creating account ends here
+		
 		
 		
 		// If Manage Records button is pressed
@@ -91,5 +105,6 @@ public class MainController extends HttpServlet {
 		if (request.getParameter("addRecords") != null) {
 			request.getRequestDispatcher("/addrecords.jsp").forward(request, response);
 		}
+		
 	}
 }
