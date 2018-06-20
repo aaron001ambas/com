@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
 
 import com.ambas.dao.ListingAccountsDAO;
+import com.ambas.dao.ListingRecordsDAO;
+import com.ambas.domain.Record;
 import com.ambas.domain.User;
 import com.ambas.services.AuthorizationService;
 import com.ambas.services.ChangePasswordService;
@@ -68,6 +70,15 @@ public class MainController extends HttpServlet {
 			manageAccounts(request, response, session);
 		}
 		
+		if (request.getParameter("manageRecordsBtn") != null) {
+			try {
+				manageRecords(request, response, session);
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		if (request.getParameter("createAccountBtn") != null) {
 			request.getRequestDispatcher("/AddAccount.jsp").forward(request,response);
 		}
@@ -78,10 +89,6 @@ public class MainController extends HttpServlet {
 			} catch (ClassNotFoundException | SQLException e) {
 				System.out.println("Error creating account");
 			}
-		}
-		
-		if (request.getParameter("manageRecordsBtn") != null) {
-			request.getRequestDispatcher("/managerecords.jsp").forward(request, response);
 		}
 		
 		if (request.getParameter("addRecordsBtn") != null) {
@@ -107,6 +114,7 @@ public class MainController extends HttpServlet {
 			if (authserv.isUserAuthorized(userUsername, requiredType)) {
 				ListingAccountsDAO listaccounts = new ListingAccountsDAO();
 				List<User> accounts = listaccounts.listAccounts();
+				System.out.println(accounts.get(1));
 				session.setAttribute("accounts", accounts);
 				request.getRequestDispatcher("/manageaccounts.jsp").forward(request, response);
 				return;
@@ -118,6 +126,14 @@ public class MainController extends HttpServlet {
 			request.setAttribute("notificationForMain", "You are not authorized to manage accounts. ERROR CAUGHT");
 			request.getRequestDispatcher("/main.jsp").forward(request, response);
 		}
+	}
+	
+	private void manageRecords(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, ClassNotFoundException, SQLException {
+		ListingRecordsDAO listrecords = new ListingRecordsDAO();
+		List<Record> recordlist = listrecords.listRecords();
+		System.out.println(recordlist.get(1).getFirstname());
+		session.setAttribute("recordlist", recordlist);
+		request.getRequestDispatcher("/managerecords.jsp").forward(request, response);
 	}
 	
 	private void createRecord(HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, SQLException {
