@@ -26,14 +26,12 @@ public class CreateAccountDAO{
 		if (!doesUsernameAlreadyExist(username)) {
 			try {
 				connect = connectDB();
-				String query = "INSERT INTO users (username, password, type) VALUES (?, 12345, ?);";
+				String query = "INSERT INTO users (username, password, type, newuser) VALUES (?, 12345, ?, 1);";
 				preparedStmt = connect.prepareStatement(query);
 				preparedStmt.setString(1, username);
 				preparedStmt.setString(2, type);
 				preparedStmt.executeUpdate();
-				System.out.println("insert success");
 			} catch (ClassNotFoundException | SQLException e) {
-				System.out.println("insert failed");
 				System.err.println(e);
 			}
 			return true;
