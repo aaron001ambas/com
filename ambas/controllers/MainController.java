@@ -16,6 +16,7 @@ import com.ambas.domain.User;
 import com.ambas.services.AuthorizationService;
 import com.ambas.services.ChangePasswordService;
 import com.ambas.services.CreateAccountService;
+import com.ambas.services.CreateRecordService;
 
 public class MainController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -35,6 +36,15 @@ public class MainController extends HttpServlet {
 		if (request.getParameter("changePasswordBtn") != null) {
 			try {
 				changePassword(request, response, session);
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if (request.getParameter("submitCreateRecordBtn") != null) {
+			try {
+				createRecord(request, response);
 			} catch (ClassNotFoundException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -108,6 +118,47 @@ public class MainController extends HttpServlet {
 			request.setAttribute("notificationForMain", "You are not authorized to manage accounts. ERROR CAUGHT");
 			request.getRequestDispatcher("/main.jsp").forward(request, response);
 		}
+	}
+	
+	private void createRecord(HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, SQLException {
+		String firstname = request.getParameter("firstName");
+		String lastname = request.getParameter("lastName");
+		String nameOfResource = request.getParameter("resourceName");
+		String serialNumber = request.getParameter("serialNumber");
+		String JRSS = request.getParameter("jrss");
+		String band = request.getParameter("band");
+		String account = request.getParameter("proposedAcc");
+		String pmpseat = request.getParameter("pmpSeat");
+		String seatjrss = request.getParameter("seatJRSS");
+		String openSeatDesc = request.getParameter("openSeatDesc");
+		String reqSkills = request.getParameter("reqSkills");
+		String requestedband = request.getParameter("requestedBand");
+		String dateOfrejection = request.getParameter("dateofReject");
+		String reasonForReject = request.getParameter("reasonForReject");
+		String detailedActionPlan = request.getParameter("detailedAction");
+		String targetDate = request.getParameter("targetDateOfComp");
+		String status = request.getParameter("status");
+		
+		CreateRecordService createrecord = new CreateRecordService();
+		createrecord.createRecord(
+				firstname,
+				lastname,
+				nameOfResource,
+				serialNumber,
+				JRSS,
+				band,
+				account,
+				pmpseat,
+				seatjrss,
+				openSeatDesc,
+				reqSkills,
+				requestedband,
+				dateOfrejection,
+				reasonForReject,
+				detailedActionPlan,
+				targetDate,
+				status
+				);
 	}
 	
 	private void createAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException, SQLException {
