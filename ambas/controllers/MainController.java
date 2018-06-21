@@ -13,12 +13,14 @@ import javax.websocket.Session;
 
 import com.ambas.dao.ListingAccountsDAO;
 import com.ambas.dao.ListingRecordsDAO;
+import com.ambas.dao.UpdatingAccountTypeDAO;
 import com.ambas.domain.Record;
 import com.ambas.domain.User;
 import com.ambas.services.AuthorizationService;
 import com.ambas.services.ChangePasswordService;
 import com.ambas.services.CreateAccountService;
 import com.ambas.services.CreateRecordService;
+import com.ambas.services.ModifyService;
 
 public class MainController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -44,6 +46,29 @@ public class MainController extends HttpServlet {
 			}
 		}
 		
+		if (request.getParameter("deleteAccountBtn") != null) {
+			try {
+				deleteAccount(request, response, session);
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			request.getRequestDispatcher("/main.jsp").forward(request, response);
+		}
+		
+		if (request.getParameter("changeTypeBtn") != null) {
+			try {
+				updateType(request.getParameter("selectedUserUsername"), request.getParameter("desiredType"));
+				request.getRequestDispatcher("/main.jsp").forward(request, response);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		if (request.getParameter("submitCreateRecordBtn") != null) {
 			try {
 				createRecord(request, response);
@@ -51,11 +76,6 @@ public class MainController extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		
-		if (request.getParameter("modifyBtn") != null) {
-//			String selectedUserUsername = request.getParameter("users.username");
-			System.out.println(request.getParameter("username"));
 		}
 		
 		if (request.getParameter("logoutBtn") != null) {
@@ -100,6 +120,11 @@ public class MainController extends HttpServlet {
 		}
 	}
 	
+	private void deleteAccount(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException {
+		ModifyService modify = new ModifyService();
+		modify.deleteAccount(request.getParameter("selectedUserUsername"));
+	}
+	
 	private void logout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
 		session.invalidate();
 		request.setAttribute("notification", "You have successfully logged out.");
@@ -114,7 +139,6 @@ public class MainController extends HttpServlet {
 			if (authserv.isUserAuthorized(userUsername, requiredType)) {
 				ListingAccountsDAO listaccounts = new ListingAccountsDAO();
 				List<User> accounts = listaccounts.listAccounts();
-				System.out.println(accounts.get(1));
 				session.setAttribute("accounts", accounts);
 				request.getRequestDispatcher("/manageaccounts.jsp").forward(request, response);
 				return;
@@ -128,10 +152,14 @@ public class MainController extends HttpServlet {
 		}
 	}
 	
+	private void updateType(String targetUser, String desiredType) throws ClassNotFoundException, SQLException, IOException {
+		ModifyService modify = new ModifyService();
+		modify.updateAccountType(targetUser, desiredType);
+	}
+	
 	private void manageRecords(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, ClassNotFoundException, SQLException {
 		ListingRecordsDAO listrecords = new ListingRecordsDAO();
 		List<Record> recordlist = listrecords.listRecords();
-		System.out.println(recordlist.get(1).getFirstname());
 		session.setAttribute("recordlist", recordlist);
 		request.getRequestDispatcher("/managerecords.jsp").forward(request, response);
 	}
