@@ -41,7 +41,7 @@ public class CreateRecordDAO {
 			String status
 			) throws ClassNotFoundException, SQLException {
 		connect = connectDB();
-		String query = "insert into records values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String query = "insert into `mydb`.`records` (firstname, lastname, nameOfResource, serialNumber, JRSS, band, account, pmpseat, seatjrss, openSeatDesc, reqSkills, requestedband, dateOfrejection, reasonForReject, detailedActionPlan, targetDate, status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		preparedStmt = connect.prepareStatement(query);
 		preparedStmt.setString(1, firstname);
 		preparedStmt.setString(2, lastname);

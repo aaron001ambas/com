@@ -17,8 +17,7 @@ public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	LoginService loginService = new LoginService();
 
-	protected void doPost(HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User user = new User();
 		try {
 			if (loginService.areCredentialsValid(request.getParameter("username"), 

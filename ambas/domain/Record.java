@@ -19,7 +19,14 @@ public class Record {
 	private String detailedActionPlan; 
 	private String targetDate;
 	private String status;
+	private String recordid;
 	
+	public String getRecordid() {
+		return recordid;
+	}
+	public void setRecordid(String recordid) {
+		this.recordid = recordid;
+	}
 	public void setFirstname(String firstname) {
 		this.firstname = firstname;
 	}

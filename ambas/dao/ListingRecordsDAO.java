@@ -27,7 +27,7 @@ public class ListingRecordsDAO {
 	
 	public List<Record> listRecords() throws ClassNotFoundException, SQLException, IOException {
 		connect = connectDB();
-		String query = "SELECT * FROM records;";
+		String query = "select firstname, lastname, nameOfResource, serialNumber, JRSS, band, account, pmpseat, seatjrss, openSeatDesc, reqSkills, requestedband, dateOfrejection, reasonForReject, detailedActionPlan, targetDate, status, recordid from `mydb`.`records`";
 		preparedStmt = connect.prepareStatement(query);
 		resultSet = preparedStmt.executeQuery();
 		List<Record> records = new ArrayList<Record>();
@@ -50,6 +50,7 @@ public class ListingRecordsDAO {
 			record.setDetailedActionPlan(resultSet.getString(15));
 			record.setTargetDate(resultSet.getString(16));
 			record.setStatus(resultSet.getString(17));
+			record.setRecordid(resultSet.getString(18));
 			records.add(record);
 		}
 		return records;
