@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.ambas.dao.DeleteAccountDAO;
+import com.ambas.dao.DeleteRecordDAO;
 import com.ambas.dao.RetrievingRecordDAO;
 import com.ambas.dao.RetrievingUserInfoDAO;
 import com.ambas.dao.UpdatingAccountTypeDAO;
@@ -25,12 +26,17 @@ public class ModifyService {
 	
 	public void deleteAccount(String username) throws ClassNotFoundException, SQLException, IOException {
 		DeleteAccountDAO delete = new DeleteAccountDAO();
-		delete.deleteRecord(username);
+		delete.deleteAccount(username);
 	}
 	
 	public List<Record> retrieveRecordToBeModified(String recordid) throws ClassNotFoundException, SQLException {
 		RetrievingRecordDAO retrieve = new RetrievingRecordDAO();
 		return retrieve.retrieveRecord(recordid);
+	}
+	
+	public void deleteRecord(String recordid) throws ClassNotFoundException, SQLException, IOException {
+		DeleteRecordDAO delete = new DeleteRecordDAO();
+		delete.deleteRecord(recordid);
 	}
 	
 }

@@ -19,7 +19,6 @@ public class ModifyRecordController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		HttpSession session = request.getSession();
-		System.out.println("record id is " + request.getParameter("recordid"));
     	String recordid = request.getParameter("recordid");
     	ModifyService modify = new ModifyService();
     	List<Record> record;

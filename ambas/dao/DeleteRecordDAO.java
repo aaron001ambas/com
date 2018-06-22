@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DeleteAccountDAO {
+public class DeleteRecordDAO {
 
 	private String dbUser = "root";
 	private String dbPassword = "root";
@@ -22,11 +22,11 @@ public class DeleteAccountDAO {
 		return connect;
 	}
 	
-	public void deleteAccount(String username) throws ClassNotFoundException, SQLException, IOException {
+	public void deleteRecord(String recordid) throws ClassNotFoundException, SQLException, IOException {
 		connect = connectDB();
-		String query = "DELETE FROM users WHERE username=?";
+		String query = "DELETE FROM records WHERE recordid=?";
 		preparedStmt = connect.prepareStatement(query);
-		preparedStmt.setString(1, username);
+		preparedStmt.setString(1, recordid);
 		preparedStmt.executeUpdate();
 	}
 	

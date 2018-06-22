@@ -46,6 +46,16 @@ public class MainController extends HttpServlet {
 			}
 		}
 		
+		if (request.getParameter("deleteRecordBtn") != null) {
+			try {
+				deleteRecord(request, response, session);
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			request.getRequestDispatcher("/main.jsp").forward(request, response);
+		}
+		
 		if (request.getParameter("deleteAccountBtn") != null) {
 			try {
 				deleteAccount(request, response, session);
@@ -120,6 +130,11 @@ public class MainController extends HttpServlet {
 		}
 	}
 	
+	private void deleteRecord(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException {
+		ModifyService modify = new ModifyService();
+		modify.deleteRecord(request.getParameter("recordid"));
+	}
+	
 	private void deleteAccount(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException {
 		ModifyService modify = new ModifyService();
 		modify.deleteAccount(request.getParameter("selectedUserUsername"));
@@ -164,7 +179,7 @@ public class MainController extends HttpServlet {
 		request.getRequestDispatcher("/managerecords.jsp").forward(request, response);
 	}
 	
-	private void createRecord(HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, SQLException {
+	private void createRecord(HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		String firstname = request.getParameter("firstName");
 		String lastname = request.getParameter("lastName");
 		String nameOfResource = request.getParameter("resourceName");
@@ -203,6 +218,7 @@ public class MainController extends HttpServlet {
 				targetDate,
 				status
 				);
+		request.getRequestDispatcher("/main.jsp").forward(request, response);
 	}
 	
 	private void createAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException, SQLException {

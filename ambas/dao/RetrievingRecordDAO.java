@@ -28,7 +28,7 @@ public class RetrievingRecordDAO {
 	
 	public List<Record> retrieveRecord(String recordid) throws ClassNotFoundException, SQLException {
 		connect = connectDB();
-		String query = "SELECT firstname, lastname, nameOfResource, serialNumber, JRSS, band, account, pmpseat, seatjrss, openSeatDesc, reqSkills, requestedband, dateOfrejection, reasonForReject, detailedActionPlan, targetDate, status FROM records WHERE recordid=?;";
+		String query = "SELECT firstname, lastname, nameOfResource, serialNumber, JRSS, band, account, pmpseat, seatjrss, openSeatDesc, reqSkills, requestedband, dateOfrejection, reasonForReject, detailedActionPlan, targetDate, status, recordid FROM records WHERE recordid=?;";
 		preparedStmt = connect.prepareStatement(query);
 		preparedStmt.setString(1, recordid);
 		resultSet = preparedStmt.executeQuery();
@@ -52,6 +52,7 @@ public class RetrievingRecordDAO {
 		record.setDetailedActionPlan(resultSet.getString(15));
 		record.setTargetDate(resultSet.getString(16));
 		record.setStatus(resultSet.getString(17));
+		record.setRecordid(resultSet.getString(18));
 		records.add(record);
 		return records;
 	}
