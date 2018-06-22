@@ -20,58 +20,85 @@ public class LoginDAO {
 		return connect;
 	}
 	
-	public boolean credentialsMatched(String username, String password) throws ClassNotFoundException, SQLException {
-		// Must check first if there are results (Using count(*) NumRows) to
-		// avoid catching any ClassNotFoundException errors
-		if (hasResult(username, password)) { 
+	public boolean credentialsMatched(String username, String password) {
+		try {
 			connect = connectDB();
-			String query = "SELECT * FROM users WHERE username=? and  password=?;";
+			String query = "SELECT count(*) as NumRow FROM users WHERE username=? and password=?;";
 			preparedStmt = connect.prepareStatement(query);
 			preparedStmt.setString(1, username);
 			preparedStmt.setString(2, password);
 			resultSet = preparedStmt.executeQuery();
 			resultSet.next();
-			if (username.equalsIgnoreCase(resultSet.getString("username"))
-					&& password.equals(resultSet.getString("password"))) {
+			if (0 < resultSet.getInt("NumRow")) {
 				return true;
+			} else {
+				return false;
+			}
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		} finally {
+			if(connect != null) {
+				try {
+					connect.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		return false;
 	}
 	
-	public boolean hasResult(String username, String password) throws ClassNotFoundException, SQLException {
-		connect = connectDB();
-		String query = "SELECT count(*) as NumRow FROM users WHERE username=? and  password=?;";
-		preparedStmt = connect.prepareStatement(query);
-		preparedStmt.setString(1, username);
-		preparedStmt.setString(2, password);
-		resultSet = preparedStmt.executeQuery();
-		resultSet.next();
-		if (0 < resultSet.getInt("NumRow")) {
-			return true;
-		} else {
-			return false;
+	public String sendUsername(String username) {
+		try {
+			connect = connectDB();
+			String query = "SELECT * FROM users WHERE username=?";
+			preparedStmt = connect.prepareStatement(query);
+			preparedStmt.setString(1, username);
+			resultSet = preparedStmt.executeQuery();
+			resultSet.next();
+			return resultSet.getString("username");
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "ERROR COULD NOT FETCH USERNAME";
+		} finally {
+			if(connect != null) {
+				try {
+					connect.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
+
 	}
 	
-	public String sendUsername(String username) throws ClassNotFoundException, SQLException {
-		connect = connectDB();
-		String query = "SELECT * FROM users WHERE username=?";
-		preparedStmt = connect.prepareStatement(query);
-		preparedStmt.setString(1, username);
-		resultSet = preparedStmt.executeQuery();
-		resultSet.next();
-		return resultSet.getString("username");
-	}
-	
-	public String sendType(String username) throws ClassNotFoundException, SQLException {
-		connect = connectDB();
-		String query = "SELECT * FROM users WHERE username=?;";
-		preparedStmt = connect.prepareStatement(query);
-		preparedStmt.setString(1, username);
-		resultSet = preparedStmt.executeQuery();
-		resultSet.next();
-		return resultSet.getString("type");
+	public String sendType(String username) {
+		try {
+			connect = connectDB();
+			String query = "SELECT * FROM users WHERE username=?;";
+			preparedStmt = connect.prepareStatement(query);
+			preparedStmt.setString(1, username);
+			resultSet = preparedStmt.executeQuery();
+			resultSet.next();
+			return resultSet.getString("type");
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "ERROR COULD NOT FETCH TYPE";
+		} finally {
+			if(connect != null) {
+				try {
+					connect.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 }

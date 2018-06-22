@@ -2,7 +2,7 @@ package com.ambas.services;
 
 import java.sql.SQLException;
 
-import com.ambas.dao.CreateRecordDAO;
+import com.ambas.dao.RecordDAO;
 
 public class CreateRecordService {
 
@@ -25,7 +25,7 @@ public class CreateRecordService {
 			String targetDate,
 			String status
 			) throws ClassNotFoundException, SQLException {
-		CreateRecordDAO createrecord = new CreateRecordDAO();
+		RecordDAO createrecord = new RecordDAO();
 		createrecord.insertRecord(firstname, lastname, nameOfResource, serialNumber, JRSS, band, account, pmpseat, seatjrss, openSeatDesc, reqSkills, requestedband, dateOfrejection, reasonForReject, detailedActionPlan, targetDate, status);
 	}
 	

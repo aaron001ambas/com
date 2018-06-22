@@ -10,16 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.ambas.dao.ListingAccountsDAO;
-import com.ambas.dao.ListingRecordsDAO;
 import com.ambas.domain.Record;
 import com.ambas.domain.User;
+import com.ambas.services.AccountSettingsService;
 import com.ambas.services.AuthorizationService;
-import com.ambas.services.ChangePasswordService;
 import com.ambas.services.CreateAccountService;
 import com.ambas.services.CreateRecordService;
 import com.ambas.services.LoginService;
-import com.ambas.services.ModifyService;
+import com.ambas.services.ManageAccountsService;
+import com.ambas.services.ManageRecordsService;
 
 public class MainController extends HttpServlet {
 
@@ -32,6 +31,8 @@ public class MainController extends HttpServlet {
 		LoginService loginService = new LoginService();
 		String username = (String) session.getAttribute("username");
 		String password = (String) session.getAttribute("password");
+		
+		AuthorizationService authserv = new AuthorizationService();
 		
 		try {
 			if (loginService.isLoggedIn(username, password)) {
@@ -56,25 +57,42 @@ public class MainController extends HttpServlet {
 					request.getRequestDispatcher("/main.jsp").forward(request, response);
 				}
 				
+			//////////////////////USER MUST BE ADMIN TO MANAGE AND CREATE ACCOUNTS///////////////////////
 				if (request.getParameter("manageAccountsBtn") != null) {
-					manageAccounts(request, response, session);
+					if (authserv.isUserAuthorized(username, "admin")) {
+						manageAccounts(request, response, session);
+					} else {
+						request.setAttribute("notificationForMain", "You are not authorized to manage accounts.");
+						request.getRequestDispatcher("/main.jsp").forward(request, response);
+					}
 				}
 							// INSIDE MANAGE ACCOUNTS PAGE
 							if (request.getParameter("createAccountBtn") != null) {
-								request.getRequestDispatcher("/AddAccount.jsp").forward(request,response);
+								if (authserv.isUserAuthorized(username, "admin")) {
+									request.getRequestDispatcher("/AddAccount.jsp").forward(request,response);
+								} else {
+									request.setAttribute("notificationForMain", "You are not authorized to manage accounts.");
+									request.getRequestDispatcher("/main.jsp").forward(request, response);
+								}
 							}
 							// END OF MANAGE ACCOUNTS PAGE
 							
 										// INSIDE ADD ACCOUNT PAGE
 										if (request.getParameter("submitCreateAccountBtn") != null) {
-											try {
-												createAccount(request, response);
-											} catch (ClassNotFoundException | SQLException e) {
-												System.out.println("Error creating account");
+											if (authserv.isUserAuthorized(username, "admin")) {
+												try {
+													createAccount(request, response);
+												} catch (ClassNotFoundException | SQLException e) {
+													System.out.println("Error creating account");
+												}
+											} else {
+												request.setAttribute("notificationForMain", "You are not authorized to manage accounts.");
+												request.getRequestDispatcher("/main.jsp").forward(request, response);
 											}
 										}
 										// END OF ADD ACCOUNT PAGE
-										
+			//////////////////////////////////////////////////////////////////////////////////////////////
+					
 										// INSIDE MODIFY ACCOUNT PAGE
 										if (request.getParameter("changeTypeBtn") != null) {
 											try {
@@ -142,9 +160,8 @@ public class MainController extends HttpServlet {
 				
 				if (request.getParameter("submitCreateRecordBtn") != null) {
 					try {
-						createRecord(request, response);
+						createRecord(request, response, session);
 					} catch (ClassNotFoundException | SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -159,7 +176,7 @@ public class MainController extends HttpServlet {
 	}
 	
 	private void modifyRecord(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException {
-		ModifyService modify = new ModifyService();
+		ManageRecordsService modify = new ManageRecordsService();
 		String firstname = request.getParameter("firstName");
 		String lastname = request.getParameter("lastName");
 		String nameOfResource = request.getParameter("resourceName");
@@ -182,12 +199,12 @@ public class MainController extends HttpServlet {
 	}
 		
 	private void deleteRecord(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException {
-		ModifyService modify = new ModifyService();
+		ManageRecordsService modify = new ManageRecordsService();
 		modify.deleteRecord(request.getParameter("recordid"));
 	}
 	
 	private void deleteAccount(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException, ServletException {
-		ModifyService modify = new ModifyService();
+		ManageAccountsService modify = new ManageAccountsService();
 		modify.deleteAccount(request.getParameter("selectedUserUsername"));
 	}
 	
@@ -197,40 +214,26 @@ public class MainController extends HttpServlet {
 		request.getRequestDispatcher("/login.jsp").forward(request, response);
 	}
 	
-	private void manageAccounts(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-		String userUsername = (String) session.getAttribute("username"); 
-		String requiredType = "admin";
-		try {
-			AuthorizationService authserv = new AuthorizationService();
-			if (authserv.isUserAuthorized(userUsername, requiredType)) {
-				ListingAccountsDAO listaccounts = new ListingAccountsDAO();
-				List<User> accounts = listaccounts.listAccounts();
-				session.setAttribute("accounts", accounts);
-				request.getRequestDispatcher("/manageaccounts.jsp").forward(request, response);
-				return;
-			} else {
-				request.setAttribute("notificationForMain", "You are not authorized to manage accounts.");
-				request.getRequestDispatcher("/main.jsp").forward(request, response);
-			}
-		} catch (ClassNotFoundException | SQLException e) {
-			request.setAttribute("notificationForMain", "You are not authorized to manage accounts. ERROR CAUGHT");
-			request.getRequestDispatcher("/main.jsp").forward(request, response);
-		}
+	private void manageAccounts(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, ClassNotFoundException, SQLException {
+		ManageAccountsService list = new ManageAccountsService();
+		List<User> accounts = list.listAccounts();
+		session.setAttribute("accounts", accounts);
+		request.getRequestDispatcher("/manageaccounts.jsp").forward(request, response);
 	}
 	
 	private void updateType(String targetUser, String desiredType) throws ClassNotFoundException, SQLException, IOException {
-		ModifyService modify = new ModifyService();
-		modify.updateAccountType(targetUser, desiredType);
+		ManageAccountsService changeAccountType = new ManageAccountsService();
+		changeAccountType.updateAccountType(targetUser, desiredType);
 	}
 	
 	private void manageRecords(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, ClassNotFoundException, SQLException {
-		ListingRecordsDAO listrecords = new ListingRecordsDAO();
-		List<Record> recordlist = listrecords.listRecords();
+		ManageRecordsService list = new ManageRecordsService();
+		List<Record> recordlist = list.listRecords();
 		session.setAttribute("recordlist", recordlist);
 		request.getRequestDispatcher("/managerecords.jsp").forward(request, response);
 	}
 	
-	private void createRecord(HttpServletRequest request, HttpServletResponse response) throws ClassNotFoundException, SQLException, ServletException, IOException {
+	private void createRecord(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		String firstname = request.getParameter("firstName");
 		String lastname = request.getParameter("lastName");
 		String nameOfResource = request.getParameter("resourceName");
@@ -249,27 +252,50 @@ public class MainController extends HttpServlet {
 		String targetDate = request.getParameter("targetDateOfComp");
 		String status = request.getParameter("status");
 		
-		CreateRecordService createrecord = new CreateRecordService();
-		createrecord.createRecord(
-				firstname,
-				lastname,
-				nameOfResource,
-				serialNumber,
-				JRSS,
-				band,
-				account,
-				pmpseat,
-				seatjrss,
-				openSeatDesc,
-				reqSkills,
-				requestedband,
-				dateOfrejection,
-				reasonForReject,
-				detailedActionPlan,
-				targetDate,
-				status
-				);
-		request.getRequestDispatcher("/main.jsp").forward(request, response);
+		if (!isEmpty(firstname) &&
+				!isEmpty(lastname) &&
+				!isEmpty(nameOfResource) &&
+				!isEmpty(serialNumber) &&
+				!isEmpty(JRSS) &&
+				!isEmpty(band) &&
+				!isEmpty(account) &&
+				!isEmpty(pmpseat) &&
+				!isEmpty(seatjrss) &&
+				!isEmpty(openSeatDesc) &&
+				!isEmpty(reqSkills) &&
+				!isEmpty(requestedband) &&
+				!isEmpty(dateOfrejection) &&
+				!isEmpty(detailedActionPlan) &&
+				!isEmpty(targetDate) &&
+				!isEmpty(status) &&
+				!isEmpty(lastname)) {
+			
+			request.setAttribute("notifForModifying", "<div style=\"color:green\">You have successfully added the record!</div>");
+			CreateRecordService createrecord = new CreateRecordService();
+			createrecord.createRecord(
+					firstname,
+					lastname,
+					nameOfResource,
+					serialNumber,
+					JRSS,
+					band,
+					account,
+					pmpseat,
+					seatjrss,
+					openSeatDesc,
+					reqSkills,
+					requestedband,
+					dateOfrejection,
+					reasonForReject,
+					detailedActionPlan,
+					targetDate,
+					status
+					);
+			manageRecords(request, response, session);
+		} else {
+			request.setAttribute("notifForCreatingRecord", "<div style=\"color:red\">You can't leave empty fields!</div>");
+			request.getRequestDispatcher("/addrecords.jsp").forward(request, response);
+		}
 	}
 	
 	private void createAccount(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException, SQLException {
@@ -291,7 +317,7 @@ public class MainController extends HttpServlet {
 	}
 	
 	private void changePassword(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, ClassNotFoundException, SQLException {
-		String username = (String) session.getAttribute("targetUsername");
+		String username = (String) session.getAttribute("username");
 		String newPass = request.getParameter("newPassword");
 		String retypePass = request.getParameter("retypePassword");
 		
@@ -307,10 +333,10 @@ public class MainController extends HttpServlet {
 	}
 	
 	private void approvePasswordChange(HttpServletRequest request, HttpServletResponse response, HttpSession session, String notif, String username, String newPass) throws ServletException, IOException, ClassNotFoundException, SQLException {
-		ChangePasswordService changepass = new ChangePasswordService();
-		changepass.changePassword(username, newPass);
-		request.setAttribute("notifForChangingPassword", notif);
-		request.getRequestDispatcher("/accountsettings.jsp").forward(request,response);
+		AccountSettingsService changePass = new AccountSettingsService();
+		changePass.changePassword(username, newPass);
+		request.setAttribute("notification", notif);
+		request.getRequestDispatcher("/login.jsp").forward(request,response);
 	}
 	
 	private void denyPasswordChange(HttpServletRequest request, HttpServletResponse response, HttpSession session, String notif) throws ServletException, IOException {

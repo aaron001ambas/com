@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.ambas.domain.Record;
-import com.ambas.domain.User;
-import com.ambas.services.ModifyService;
+import com.ambas.services.ManageRecordsService;
 
 public class ModifyRecordController extends HttpServlet {
        
@@ -20,7 +19,7 @@ public class ModifyRecordController extends HttpServlet {
 		
 		HttpSession session = request.getSession();
     	String recordid = request.getParameter("recordid");
-    	ModifyService modify = new ModifyService();
+    	ManageRecordsService modify = new ManageRecordsService();
     	List<Record> record;
 		try {
 			record = modify.retrieveRecordToBeModified(recordid);

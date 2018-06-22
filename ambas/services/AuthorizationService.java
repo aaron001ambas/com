@@ -15,4 +15,13 @@ public class AuthorizationService {
 		}
 	}
 	
+	public boolean isLoggedIn(String username, String password) throws ClassNotFoundException, SQLException {
+		LoginDAO loginDao = new LoginDAO();
+		if (loginDao.credentialsMatched(username, password)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 }

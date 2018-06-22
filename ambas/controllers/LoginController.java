@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.ambas.domain.User;
 import com.ambas.services.LoginService;
 
 public class LoginController extends HttpServlet {
@@ -27,6 +26,7 @@ public class LoginController extends HttpServlet {
 			}
 		} catch (ClassNotFoundException | SQLException e) {
 			denyAccess(request, response, username, password);
+			e.printStackTrace();
 		}
 	}
 	

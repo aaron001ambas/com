@@ -24,8 +24,8 @@ public class LoginService {
 	}
 	
 	public boolean isLoggedIn(String username, String password) throws ClassNotFoundException, SQLException {
-		LoginDAO loginDao = new LoginDAO();
-		if (loginDao.credentialsMatched(username, password)) {
+		AuthorizationService loggedin = new AuthorizationService();
+		if (loggedin.isLoggedIn(username, password)) {
 			return true;
 		} else {
 			return false;
