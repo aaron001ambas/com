@@ -43,7 +43,6 @@ public class MainController extends HttpServlet {
 								try {
 									changePassword(request, response, session);
 								} catch (ClassNotFoundException | SQLException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -93,13 +92,13 @@ public class MainController extends HttpServlet {
 										
 										if (request.getParameter("deleteAccountBtn") != null) {
 											try {
-												request.setAttribute("notifForChangingType", "<div style=\"color:green\">You have successfully deleted the record!</div>");
 												deleteAccount(request, response, session);
+												request.setAttribute("notifForChangingType", "<div style=\"color:green\">You have successfully deleted the record!</div>");
+												manageAccounts(request, response, session);
 											} catch (ClassNotFoundException | SQLException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
+												request.getRequestDispatcher("/main.jsp").forward(request, response);
 											}
-											request.getRequestDispatcher("/main.jsp").forward(request, response);
+											
 										}
 										// END OF MODIFY ACCOUNT PAGE
 							
@@ -187,7 +186,7 @@ public class MainController extends HttpServlet {
 		modify.deleteRecord(request.getParameter("recordid"));
 	}
 	
-	private void deleteAccount(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException {
+	private void deleteAccount(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ClassNotFoundException, SQLException, IOException, ServletException {
 		ModifyService modify = new ModifyService();
 		modify.deleteAccount(request.getParameter("selectedUserUsername"));
 	}
@@ -292,23 +291,31 @@ public class MainController extends HttpServlet {
 	}
 	
 	private void changePassword(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException, ClassNotFoundException, SQLException {
+		String username = (String) session.getAttribute("targetUsername");
 		String newPass = request.getParameter("newPassword");
 		String retypePass = request.getParameter("retypePassword");
-		String username = (String) session.getAttribute("username");
+		
 		if (!isEmpty(newPass) || !isEmpty(retypePass)) {
 			if (newPass.equals(retypePass)) {
-				ChangePasswordService changepass = new ChangePasswordService();
-				changepass.isPasswordChanged(username, newPass);
-				request.setAttribute("notifForChangingPassword", "<div style=\"color:green\">Password has been changed!</div>");
-				request.getRequestDispatcher("/accountsettings.jsp").forward(request,response);
+				approvePasswordChange(request, response, session, "<div style=\"color:green\">Password has been changed!</div>", username, newPass);
 			} else {
-				request.setAttribute("notifForChangingPassword", "<div style=\"color:red\">Retyped password does not match!</div>");
-				request.getRequestDispatcher("/accountsettings.jsp").forward(request,response);
+				denyPasswordChange(request, response, session, "<div style=\"color:red\">Retyped password does not match!</div>");
 			}
 		} else {
-			request.setAttribute("notifForChangingPassword", "<div style=\"color:red\">You must fill up the form!</div>");
-			request.getRequestDispatcher("/accountsettings.jsp").forward(request,response);
+			denyPasswordChange(request, response, session, "<div style=\"color:red\">You must fill up the form!</div>");
 		}
+	}
+	
+	private void approvePasswordChange(HttpServletRequest request, HttpServletResponse response, HttpSession session, String notif, String username, String newPass) throws ServletException, IOException, ClassNotFoundException, SQLException {
+		ChangePasswordService changepass = new ChangePasswordService();
+		changepass.changePassword(username, newPass);
+		request.setAttribute("notifForChangingPassword", notif);
+		request.getRequestDispatcher("/accountsettings.jsp").forward(request,response);
+	}
+	
+	private void denyPasswordChange(HttpServletRequest request, HttpServletResponse response, HttpSession session, String notif) throws ServletException, IOException {
+		request.setAttribute("notifForChangingPassword", notif);
+		request.getRequestDispatcher("/accountsettings.jsp").forward(request,response);
 	}
 	
 	private boolean isEmpty(String username) {
