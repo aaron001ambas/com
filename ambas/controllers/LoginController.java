@@ -33,6 +33,7 @@ public class LoginController extends HttpServlet {
 	private void grantAccess(HttpServletRequest request, HttpServletResponse response, String username, String password) throws ClassNotFoundException, SQLException, ServletException, IOException {
 		HttpSession session = request.getSession();
 		LoginService loginService = new LoginService();
+		session.setAttribute("loggedIn", "true");
 		session.setAttribute("username", loginService.retrieveUsername(username));
 		session.setAttribute("password", password);
 		session.setAttribute("type", loginService.retrieveType(username));
