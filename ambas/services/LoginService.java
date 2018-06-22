@@ -1,16 +1,13 @@
 package com.ambas.services;
 
 import java.sql.SQLException;
-
-import com.ambas.controllers.LoginController;
 import com.ambas.dao.LoginDAO;
 
 public class LoginService {
-
-	LoginDAO loginDao = new LoginDAO();
 	
 	public boolean areCredentialsValid(String username, String password) throws ClassNotFoundException, SQLException {
 		if (!isEmpty(username, password)) {
+			LoginDAO loginDao = new LoginDAO();
 			if (loginDao.credentialsMatched(username, password)) {
 				return true;
 			}
@@ -25,4 +22,24 @@ public class LoginService {
 			return false;
 		}
 	}
+	
+	public boolean isLoggedIn(String username, String password) throws ClassNotFoundException, SQLException {
+		LoginDAO loginDao = new LoginDAO();
+		if (loginDao.credentialsMatched(username, password)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public String retrieveType(String username) throws ClassNotFoundException, SQLException {
+		LoginDAO logindao = new LoginDAO();
+		return logindao.sendType(username);
+	}
+
+	public String retrieveUsername(String username) throws ClassNotFoundException, SQLException {
+		LoginDAO logindao = new LoginDAO();
+		return logindao.sendUsername(username);
+	}
+	
 }

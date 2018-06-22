@@ -13,33 +13,36 @@ import com.ambas.domain.User;
 import com.ambas.services.LoginService;
 
 public class LoginController extends HttpServlet {
-	
-	private static final long serialVersionUID = 1L;
-	LoginService loginService = new LoginService();
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		User user = new User();
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
 		try {
-			if (loginService.areCredentialsValid(request.getParameter("username"), 
-					request.getParameter("password"))) {
-				// Login Success
-				HttpSession session = request.getSession();
-				session.setAttribute("username", user.getUsername(request.getParameter("username"), request.getParameter("password")));
-				session.setAttribute("password", user.getPassword(request.getParameter("username"), request.getParameter("password")));
-				session.setAttribute("type", user.getType(request.getParameter("username"), request.getParameter("password")));
-				request.getRequestDispatcher("/main.jsp").forward(request, response);
-				System.out.println("[" + request.getRemoteAddr() + "] User " + user.getUsername(request.getParameter("username"), request.getParameter("password")) + " has logged in.");
+			LoginService loginService = new LoginService();
+			if (loginService.areCredentialsValid(username, password)) {
+				grantAccess(request, response, username, password);
 			} else {
-				// Login Failed
-				request.setAttribute("notification", "Invalid username and/or password");
-				request.getRequestDispatcher("/login.jsp").forward(request, response);
-				System.out.println("[" + request.getRemoteAddr() + "] Attempted to login with the credentials (" + request.getParameter("username") + "," + request.getParameter("password") + ")");
+				denyAccess(request, response, username, password);
 			}
 		} catch (ClassNotFoundException | SQLException e) {
-			// Login Failed, Error
-			request.setAttribute("notification", "Invalid username and/or password");
-			request.getRequestDispatcher("/login.jsp").forward(request, response);
-			System.out.println("[" + request.getRemoteAddr() + "] Attempted to crash MySQL with login credentials (" + request.getParameter("username") + "," + request.getParameter("password") + ")");
+			denyAccess(request, response, username, password);
 		}
 	}
+	
+	private void grantAccess(HttpServletRequest request, HttpServletResponse response, String username, String password) throws ClassNotFoundException, SQLException, ServletException, IOException {
+		HttpSession session = request.getSession();
+		LoginService loginService = new LoginService();
+		session.setAttribute("username", loginService.retrieveUsername(username));
+		session.setAttribute("password", password);
+		session.setAttribute("type", loginService.retrieveType(username));
+		request.getRequestDispatcher("/main.jsp").forward(request, response);
+		System.out.println("[" + request.getRemoteAddr() + "] User " + loginService.retrieveUsername(username) + " has logged in.");
+	}
+	
+	private void denyAccess(HttpServletRequest request, HttpServletResponse response, String username, String password) throws ServletException, IOException {
+		request.setAttribute("notification", "Invalid username and/or password");
+		request.getRequestDispatcher("/login.jsp").forward(request, response);
+		System.out.println("[" + request.getRemoteAddr() + "] Attempted to login with the credentials (" + username + "," + password + ")");
+	}
+	
 }
